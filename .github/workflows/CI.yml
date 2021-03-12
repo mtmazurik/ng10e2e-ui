@@ -1,4 +1,4 @@
-name: CI (github to dockerhub image)
+name: CI (github to dockerhub image) to Deploy Helm
 
 on:
   push:
@@ -31,3 +31,10 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+  deploy:
+    runs-on: self-hosted
+    needs: [docker]
+    steps:
+      -
+        name: Upgrade using Helm Chart
+        run: helm upgrade maiden-voyage-release ./cca-charts/ng10e2e-ui
