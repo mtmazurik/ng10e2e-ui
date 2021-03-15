@@ -37,4 +37,4 @@ jobs:
     steps:
       -
         name: Upgrade using Helm Chart
-        run: helm upgrade -f values.yaml maiden-voyage-release maiden-voyage-release
+        run: helm upgrade -release first-release ng10e2e-ui
