@@ -37,4 +37,4 @@ jobs:
     steps:
       -
         name: Upgrade using Helm Chart
-        run: helm install -release my-release ng10e2e-ui
+        run: helm install -release my-release cca-charts/ng10e2e-ui
