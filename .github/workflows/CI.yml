@@ -36,12 +36,7 @@ jobs:
     needs: [docker]
     steps:
       -
-        name: Upgrade using Helm Chart and deliverybot
-        uses: deliverybot/helm@master
-        with:
-          token: ${{ github.token }}
-          chart: cca-charts/ng10e2e-ui
-          namespace: default
-          release: my-release
+        name: Upgrade using Helm Chart
+        cmd: helm upgrade my-release cca-charts/ng10e2e-ui 
         env:
           KUBECONFIG_FILE: ${{ secrets.KUBECONFIG}}
