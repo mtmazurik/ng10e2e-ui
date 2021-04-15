@@ -6,7 +6,7 @@ on:
       - 'master'
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
     steps:
       -
@@ -31,12 +31,3 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-  deploy:
-    runs-on: self-hosted
-    needs: [docker]
-    steps:
-      -
-        name: Upgrade using Helm Chart
-        cmd: helm upgrade my-release cca-charts/ng10e2e-ui
-        env:
-          KUBECONFIG_FILE: ${{secrets.KUBECONFIG}}
