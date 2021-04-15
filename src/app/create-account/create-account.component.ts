@@ -7,7 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateAccountComponent implements OnInit {
 
-  constructor() { }
+  public loginName: string;
+
+
+  constructor() { 
+    this.loginName = "mtmazurik";
+  }
 
   ngOnInit(): void {
   }

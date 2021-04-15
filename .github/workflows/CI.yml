@@ -37,4 +37,5 @@ jobs:
     steps:
       -
         name: Upgrade using Helm Chart
-        run: helm upgrade -f values.yaml maiden-voyage-release maiden-voyage-release
+        with: 
+          command helm upgrade --install maiden-voyage-release 
