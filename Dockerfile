@@ -3,7 +3,7 @@
 ### STAGE 1: Build ###
 
 # We label our stage as ‘builder’
-FROM node:12.16.3 as build
+FROM node:12.16.3 as builder
 
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
 
@@ -17,7 +17,7 @@ COPY package-lock.json /app/package-lock.json
 RUN npm install
 RUN npm install -g @angular/cli@10.0.7
 
-COPY . /app
+COPY . .
 
 ## Build the angular app in production mode and store the artifacts in dist folder
 
@@ -35,7 +35,7 @@ COPY nginx/default.conf /etc/nginx/conf.d/
 RUN rm -rf /usr/share/nginx/html/*
 
 ## From ‘builder’ stage copy over the artifacts in dist folder to default nginx public folder
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist/ng10e2e-ui /usr/share/nginx/html
 
 EXPOSE 80
 
