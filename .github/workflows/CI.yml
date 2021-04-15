@@ -37,5 +37,6 @@ jobs:
     steps:
       -
         name: Upgrade using Helm Chart
-        with: 
-          command helm upgrade --install maiden-voyage-release 
+        cmd: helm upgrade my-release cca-charts/ng10e2e-ui
+        env:
+          KUBECONFIG_FILE: ${{secrets.KUBECONFIG}}
