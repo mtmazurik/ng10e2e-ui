@@ -3,7 +3,7 @@
 ### STAGE 1: Build ###
 
 # We label our stage as ‘builder’
-FROM node:12.16.3 as builder
+FROM node:latest as build
 
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
 RUN mkdir -p /app
@@ -11,33 +11,31 @@ RUN mkdir -p /app
 WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
+# Stage 1: Compile and Build angular codebase
 
-COPY package.json /app/package.json
-COPY package-lock.json /app/package-lock.json
+# Use official node image as the base image
+FROM node:latest as build
 
+# Set the working directory
+WORKDIR /usr/local/app
+
+# Add the source code to app
+COPY ./ /usr/local/app/
+
+# Install all the dependencies
 RUN npm install
-RUN npm install -g @angular/cli@10.0.7
 
-COPY . /app
-
-## Build the angular app in production mode and store the artifacts in dist folder
-
-RUN  ng build --prod
+# Generate the build of the application
+RUN npm run build
 
 
-### STAGE 2: Setup nginx ### pulls (by default) from Dockerhub
+# Stage 2: Serve app with nginx server
 
-FROM nginx:1.17-alpine
+# Use official nginx image as the base image
+FROM nginx:latest
 
-## Copy our default nginx config
-COPY nginx/default.conf /etc/nginx/conf.d/
+# Copy the build output to replace the default nginx contents.
+COPY --from=build /app/dist/ng20e2e-ui /usr/share/nginx/html
 
-## Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
-
-## From ‘builder’ stage copy over the artifacts in dist folder to default nginx public folder
-COPY --from=builder /app/dist/ng10e2e-ui /usr/share/nginx/html
-
+# Expose port 80
 EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
