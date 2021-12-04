@@ -16,20 +16,21 @@ ENV PATH /app/node_modules/.bin:$PATH
 # Use official node image as the base image
 FROM node:latest as build
 
-# Set the working directory
-WORKDIR /usr/local/app
-
 # Add the source code to app
-COPY ./ /usr/local/app/
+COPY . .
 
 # Install all the dependencies
 RUN npm install
+RUN npm install -g @angular/cli@10.0.7
 
 # Generate the build of the application
-RUN npm run build
+RUN npm run build --prod --output-path=dist
 
 
 # Stage 2: Serve app with nginx server
+
+# pre-cleanup
+RUN rm -rf /usr/share/nginx/html/*
 
 # Use official nginx image as the base image
 FROM nginx:latest
