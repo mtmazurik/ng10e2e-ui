@@ -1,42 +1,33 @@
-# Angular Docker Image; Multi-stage build courtesy of:
-#  https://mherman.org/blog/dockerizing-an-angular-app/
-### STAGE 1: Build ###
+# Angular Docker Image; Multi-stage build
+# attribution to: https://dev.to/ollita7/dockerizing-an-angular-app-3nef
 
-# We label our stage as ‘builder’
-FROM node:latest as build
+### STAGE 1: Installing & Building ###
 
-## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
-RUN mkdir -p /app
+FROM node:current-alpine as builder 
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
-# Stage 1: Compile and Build angular codebase
+COPY / ./
 
-# Use official node image as the base image
-FROM node:latest as build
+COPY package.json ./
 
-# Add the source code to app
+RUN npm install -g @angular/cli@10.0.7 && \
+    npm install && \
+    ng build
+
 COPY . .
 
-# Install all the dependencies
-RUN npm install
-RUN npm install -g @angular/cli@10.0.7
+### STAGE 2: Setup nginx ### pulls (by default) from Dockerhub
 
-# Generate the build of the application
-RUN npm run build --prod --output-path=dist
+FROM nginx:1.17-alpine
+WORKDIR /app
 
+## Copy our default nginx config
+COPY nginx/default.conf /etc/nginx/conf.d/
 
-# Stage 2: Serve app with nginx server
+## From ‘builder’ stage copy over the artifacts in dist folder to default nginx public folder
+COPY --from=builder /app/dist/ng10e2e-ui /usr/share/nginx/html
 
-# pre-cleanup
-RUN rm -rf /usr/share/nginx/html/*
-
-# Use official nginx image as the base image
-FROM nginx:latest
-
-# Copy the build output to replace the default nginx contents.
-COPY --from=build /app/dist/ng20e2e-ui /usr/share/nginx/html
-
-# Expose port 80
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
