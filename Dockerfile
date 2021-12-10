@@ -1,33 +1,28 @@
 # Angular Docker Image; Multi-stage build
-# attribution to: https://dev.to/ollita7/dockerizing-an-angular-app-3nef
+# attribution: https://www.indellient.com/blog/how-to-dockerize-an-angular-application-with-nginx/
 
-### STAGE 1: Installing & Building ###
+### STAGE 1: Compile & build ng codebase
 
-FROM node:current-alpine as builder 
+FROM node:latest as build
 
 WORKDIR /app
 
-COPY / ./
+# all of the files
+COPY . /app
 
-COPY package.json ./
+# Install only production dependencies;  equivalent to:   npm install against /app/package.json
+RUN npm ci --only-production
 
-RUN npm install -g @angular/cli@10.0.7 && \
-    npm install && \
-    ng build
+# Generate the build of the app
 
-COPY . .
+RUN npm run build
 
-### STAGE 2: Setup nginx ### pulls (by default) from Dockerhub
 
-FROM nginx:1.17-alpine
-WORKDIR /app
+### STAGE 2: Serve app with nginx server
 
-## Copy our default nginx config
-COPY nginx/default.conf /etc/nginx/conf.d/
+FROM nginx:latest
 
-## From ‘builder’ stage copy over the artifacts in dist folder to default nginx public folder
-COPY --from=builder /app/dist/ng10e2e-ui /usr/share/nginx/html
+## From ‘build’ stage copy over the artifacts in dist folder to default nginx public folder
+COPY --from=build /app/dist/ng10e2e-ui /usr/share/nginx/html
 
 EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
