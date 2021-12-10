@@ -17,7 +17,6 @@ RUN npm ci --only-production
 
 RUN npm run build
 
-
 ### STAGE 2: Serve app with nginx server
 
 FROM nginx:latest
