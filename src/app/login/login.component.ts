@@ -21,7 +21,13 @@ export class LoginComponent implements OnInit {
       this.auth.logout(); //{ returnTo: document.location.origin}
     }
     else { 
-      this.auth.loginWithRedirect();
+      this.auth.loginWithRedirect({
+        appState: { target: '/' },
+        authorizationParams: {
+          prompt: "login",
+          screen_hint: "signup"
+        }
+      });
     }
   }
 }

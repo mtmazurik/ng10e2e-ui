@@ -21,8 +21,8 @@ import { AngularMaterialModule } from './angular-material.module'
     BrowserAnimationsModule,
     AngularMaterialModule,
     AuthModule.forRoot({
-      domain: 'cloudcomputingassociates.auth0.com',
-      clientId: 'JaSg29de0IyNdsjc5dbndYMyln4TwQj9'
+      domain: 'dev-d71v6o5mhyfosv50.us.auth0.com',
+      clientId: 'EyUz3CunpJtd4ZRsn0XyUdR07UVi6R1D'
     })
   ],
   providers: [],

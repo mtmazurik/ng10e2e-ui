@@ -3,25 +3,24 @@
 
 ### STAGE 1: Compile & build ng codebase
 
-FROM node:latest as build
+FROM node:16.20.2 AS build
 
 WORKDIR /app
 
+
+COPY package.json package-lock.json  ./
+# Install only production dependencies;  equivalent to:   npm install against /app/package.json
+RUN npm ci
+RUN npm install
 # all of the files
 COPY . /app
-
-# Install only production dependencies;  equivalent to:   npm install against /app/package.json
-RUN npm ci --only-production
-
-# Generate the build of the app
-
-RUN npm run build
+RUN npx ng build --prod --output-path=dist
 
 ### STAGE 2: Serve app with nginx server
 
 FROM nginx:latest
 
 ## From ‘build’ stage copy over the artifacts in dist folder to default nginx public folder
-COPY --from=build /app/dist/ng10e2e-ui /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
